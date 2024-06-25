@@ -15,23 +15,25 @@
     <button type="submit">Login</button>
   </form>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js"></script>
   <script>
-    // Initialize Firebase
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+    // Your Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyAxxRC2_sJro29YjJLna9RkWLLzbvMoyFI",
+      authDomain: "simplelogin-40bda.firebaseapp.com",
+      projectId: "simplelogin-40bda",
+      storageBucket: "simplelogin-40bda.appspot.com",
+      messagingSenderId: "114739983001633380571",
+      appId: "1:114739983001633380571:web:4c9b69c3f...",
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
 
+    // Login form submission handler
     const loginForm = document.getElementById('loginForm');
-
     loginForm.addEventListener('submit', function(event) {
       event.preventDefault();
 
