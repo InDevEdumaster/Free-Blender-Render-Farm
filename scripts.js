@@ -1,12 +1,10 @@
 // scripts.js
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBdkCOkDpJ__57TcBFQlb8-jTJEbzDVFCA",
+    authDomain: "free-blender-render-farm.firebaseapp.com",
+    projectId: "free-blender-render-farm",
+    storageBucket: "free-blender-render-farm.appspot.com",
 };
 
 // Initialize Firebase
