@@ -1,4 +1,3 @@
-// scripts.js
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBdkCOkDpJ__57TcBFQlb8-jTJEbzDVFCA",
@@ -61,6 +60,22 @@ authForm.addEventListener('submit', (e) => {
             });
     }
 });
+
+// Google Sign-In
+async function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+        const userCred = await auth.signInWithPopup(provider);
+        console.log('User signed in:', userCred.user);
+        // Redirect to profile page after successful login
+        window.location.href = 'profile.html';
+    } catch (error) {
+        console.error('Error during sign-in:', error);
+    }
+}
+
+// Add event listener to Google sign-in button
+document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
 
 // Check user state
 auth.onAuthStateChanged(user => {
