@@ -1,62 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blender Render Farm</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blender Render Farm</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Blender Render Farm</h1>
-  <form id="uploadForm">
-    <input type="file" id="fileUpload" required><br>
-    <input type="number" id="frameInput" placeholder="Frame to render" required><br>
-    <button type="submit">Upload & Render</button>
-  </form>
-
-  <div id="renderedFiles"></div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-storage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js"></script>
-
-  <script>
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    var storage = firebase.storage();
-    var db = firebase.firestore();
-
-    // Handle form submission
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      
-      var file = document.getElementById('fileUpload').files[0];
-      var frame = document.getElementById('frameInput').value;
-
-      if (file && frame) {
-        // Upload file to Firebase Storage
-        var storageRef = storage.ref('uploads/' + file.name);
-        storageRef.put(file).then(function(snapshot) {
-          console.log('File uploaded to Firebase Storage');
-
-          // Save render job details to Firestore
-          db.collection('renderJobs').add({
-            filename: file.name,
-            frame: frame,
-            status: 'pending'
-          }).then(function(docRef) {
-            console.log('Render job submitted to Firestore with ID: ', docRef.id);
-          }).catch(function(error) {
-            console.error('Error adding render job to Firestore: ', error);
-          });
-        }).catch(function(error) {
-          console.error('Error uploading file to Firebase Storage: ', error);
-        });
-      } else {
-        console.error('Please select a file and enter a frame number');
-      }
-    });
-  </script>
+    <h1>Blender Render Farm</h1>
+    <div id="auth-section">
+        <h2>Register</h2>
+        <form id="register-form">
+            <input type="email" id="register-email" placeholder="Email" required>
+            <input type="password" id="register-password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <div id="profile-section" style="display:none;">
+        <h2>Welcome, <span id="username"></span></h2>
+        <form id="upload-form">
+            <input type="file" id="blend-file" accept=".blend" required>
+            <input type="number" id="frame-number" placeholder="Frame number" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="job-status"></div>
+        <div id="rendered-files"></div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
