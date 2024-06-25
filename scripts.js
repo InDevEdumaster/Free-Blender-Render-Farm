@@ -1,3 +1,4 @@
+// scripts.js
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
@@ -10,108 +11,108 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
-const db = firebase.firestore();
 const storage = firebase.storage();
 
-// Register user
-document.getElementById('register-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
+// Elements
+const authContainer = document.getElementById('auth-container');
+const profileContainer = document.getElementById('profile-container');
+const formTitle = document.getElementById('form-title');
+const authForm = document.getElementById('auth-form');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const submitBtn = document.getElementById('submit-btn');
+const toggleAuth = document.getElementById('toggle-auth');
+const usernameDisplay = document.getElementById('username-display');
+const uploadForm = document.getElementById('upload-form');
+const blendFileInput = document.getElementById('blend-file');
+const frameNumberInput = document.getElementById('frame-number');
+const filesList = document.getElementById('files-list');
 
-    auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            alert('Registration successful!');
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
+let isRegistering = false;
+
+// Toggle between login and registration
+toggleAuth.addEventListener('click', () => {
+    isRegistering = !isRegistering;
+    formTitle.textContent = isRegistering ? 'Register' : 'Login';
+    submitBtn.textContent = isRegistering ? 'Register' : 'Login';
+    toggleAuth.innerHTML = isRegistering ? 'Already have an account? <a href="#">Login</a>' : 'Don\'t have an account? <a href="#">Register</a>';
 });
 
-// Login user
-document.getElementById('login-form').addEventListener('submit', (e) => {
+// Handle form submission
+authForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+    const username = usernameInput.value;
+    const password = passwordInput.value;
 
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
-});
-
-// Monitor auth state
-auth.onAuthStateChanged(user => {
-    if (user) {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('profile-section').style.display = 'block';
-        document.getElementById('username').innerText = user.email;
-        loadUserJobs(user.uid);
-    } else {
-        document.getElementById('auth-section').style.display = 'block';
-        document.getElementById('profile-section').style.display = 'none';
-    }
-});
-
-// File upload handling
-document.getElementById('upload-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const file = document.getElementById('blend-file').files[0];
-    const frameNumber = document.getElementById('frame-number').value;
-    const user = auth.currentUser;
-
-    if (file.size > 1024 * 1024 * 1024) { // 1 GB
-        alert('File size exceeds 1 GB');
-        return;
-    }
-
-    const filePath = `blender_files/${user.uid}/${file.name}`;
-    const fileRef = storage.ref(filePath);
-
-    fileRef.put(file).then(() => {
-        fileRef.getDownloadURL().then(url => {
-            db.collection('jobs').add({
-                userId: user.uid,
-                fileUrl: url,
-                frameNumber: frameNumber,
-                status: 'pending'
-            }).then(() => {
-                alert('File uploaded successfully!');
-            }).catch((error) => {
+    if (isRegistering) {
+        auth.createUserWithEmailAndPassword(username, password)
+            .then(() => {
+                alert('User registered successfully');
+            })
+            .catch(error => {
                 alert(error.message);
             });
-        });
-    }).catch((error) => {
-        alert(error.message);
-    });
+    } else {
+        auth.signInWithEmailAndPassword(username, password)
+            .then(() => {
+                window.location.href = 'profile.html';
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
 });
 
-// Load user jobs and rendered files
-function loadUserJobs(userId) {
-    db.collection('jobs').where('userId', '==', userId).get().then(querySnapshot => {
-        const jobStatus = document.getElementById('job-status');
-        const renderedFiles = document.getElementById('rendered-files');
-        jobStatus.innerHTML = '';
-        renderedFiles.innerHTML = '';
+// Check user state
+auth.onAuthStateChanged(user => {
+    if (user) {
+        if (window.location.pathname.endsWith('profile.html')) {
+            usernameDisplay.textContent = user.email;
+            loadRenderedFiles(user.uid);
+        } else {
+            window.location.href = 'profile.html';
+        }
+    } else {
+        if (window.location.pathname.endsWith('profile.html')) {
+            window.location.href = 'index.html';
+        }
+    }
+});
 
-        querySnapshot.forEach(doc => {
-            const job = doc.data();
-            const jobElement = document.createElement('div');
-            jobElement.innerHTML = `Frame ${job.frameNumber}: ${job.status}`;
-            jobStatus.appendChild(jobElement);
+// Handle file upload
+uploadForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const file = blendFileInput.files[0];
+    const frameNumber = frameNumberInput.value;
 
-            if (job.status === 'completed') {
-                const imgElement = document.createElement('img');
-                imgElement.src = job.renderedImageUrl;
-                imgElement.alt = `Frame ${job.frameNumber}`;
-                renderedFiles.appendChild(imgElement);
-            }
+    if (file && file.size <= 1 * 1024 * 1024 * 1024) { // 1GB limit
+        const user = auth.currentUser;
+        const storageRef = storage.ref(`blenderFiles/${user.uid}/${file.name}`);
+        storageRef.put(file).then(snapshot => {
+            storageRef.updateMetadata({ customMetadata: { frameNumber } });
+            alert('File uploaded successfully');
+        }).catch(error => {
+            alert(error.message);
         });
+    } else {
+        alert('Please upload a .blend file smaller than 1GB');
+    }
+});
+
+// Load rendered files
+function loadRenderedFiles(uid) {
+    const filesRef = storage.ref(`renderedFiles/${uid}`);
+    filesRef.listAll().then(result => {
+        filesList.innerHTML = '';
+        result.items.forEach(fileRef => {
+            fileRef.getDownloadURL().then(url => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${url}" target="_blank">${fileRef.name}</a>`;
+                filesList.appendChild(li);
+            });
+        });
+    }).catch(error => {
+        alert(error.message);
     });
 }
