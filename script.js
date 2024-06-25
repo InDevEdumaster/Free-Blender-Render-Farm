@@ -13,7 +13,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-    xhr.send('username=' + username + '&password=' + password);
+    xhr.send('username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password));
 });
 
 document.getElementById('registerForm').addEventListener('submit', function(event) {
@@ -31,5 +31,5 @@ document.getElementById('registerForm').addEventListener('submit', function(even
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-    xhr.send('username=' + username + '&password=' + password);
+    xhr.send('username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password));
 });
