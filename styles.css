@@ -1,37 +1,90 @@
-/* styles.css */
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
+h1, h2 {
+    color: #333;
+}
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Container Styles */
 #auth-container, #profile-container {
-    max-width: 400px;
-    margin: 50px auto;
+    background-color: #fff;
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-h2 {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
     text-align: center;
 }
 
+/* Form Styles */
 form {
     display: flex;
     flex-direction: column;
 }
 
-input, button {
-    margin: 10px 0;
+input[type="email"],
+input[type="password"],
+input[type="file"],
+input[type="number"],
+button {
+    margin-bottom: 10px;
     padding: 10px;
     font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Toggle Auth Link */
 #toggle-auth {
-    text-align: center;
+    margin-top: 10px;
 }
 
-#rendered-files ul {
+/* Profile Section */
+#profile-container {
+    display: none;
+}
+
+#username-display {
+    margin-bottom: 20px;
+}
+
+#files-list {
     list-style: none;
     padding: 0;
+}
+
+#files-list li {
+    margin-bottom: 10px;
+}
+
+#files-list a {
+    color: #007BFF;
 }
